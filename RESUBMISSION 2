@@ -1,0 +1,274 @@
+import java.util.*;
+
+public class QuickChat {
+
+    static Scanner scanner = new Scanner(System.in);
+    static List<String> recentMessages = new ArrayList<>();
+    static int messageCounter = 0;
+
+}
+
+
+public static void main(String[] args) {
+        // Simulated login credentials;
+        String storedUsername = "User_123";
+        String storedPassword = "Pass_123";
+
+        // Login
+        System.out.print("Enter username: ");
+        String username = scanner.nextLine();
+        System.out.print("Enter password: ");
+        String password = scanner.nextLine();
+
+        if (username.equals(storedUsername) && password.equals(storedPassword)) {
+            System.out.println("Welcome to QuickChat");
+            runChat();
+        } else {
+            System.out.println("Username or password incorrect, please try again.");
+        }
+    }
+
+    static void runChat(int messageCounter) {
+        System.out.print("How many messages would you like to send? ");
+        int totalMessages = Integer.parseInt(scanner.nextLine());
+
+        while (true) {
+            System.out.println("Menu:Send Message && Show Recent Messages && Quit");
+            System.out.print("Choose an option:1-3 ");
+            int option = Integer.parseInt(scanner.nextLine());
+
+            switch (option) {
+                case 1 -> {
+if (messageCounter < totalMessages) { sendMessage();
+} else {
+System.out.println("You have reached your message limit.");
+}
+                }
+                case 2 -> showRecentMessages();
+                case 3 -> {
+System.out.println("Goodbye!");
+return;
+                }
+                default -> System.out.println("Invalid option.");
+            }
+        }
+    }
+
+
+    static String generateMessageID() {
+        Random rand = new Random();
+        StringBuilder id = new StringBuilder();
+        for (int i = 0; i < 10; i++) {
+            id.append(rand.nextInt(10));
+        }
+        return id.toString();
+    }
+
+
+import javax.swing.JOptionPane;
+static void sendMessage() {
+    String messageID = generateMessageID();
+
+    // Recipient validation
+    String recipient = JOptionPane.showInputDialog("Enter recipient cell number (e.g. +2782123456):");
+    if (!recipient.matches("}")) {
+        JOptionPane.showMessageDialog(null, "Invalid recipient number. Must include international code and max 10 digits.");
+        return;
+    }
+
+    // Message input
+    String message = JOptionPane.showInputDialog("Enter your message (max 50 characters):");
+    if (message.length() > 250) {
+        JOptionPane.showMessageDialog(null, "Please enter a message of less than 250 characters.");
+        return;
+    } else if (message.length() > 50) {
+        JOptionPane.showMessageDialog(null, "Please enter a message of less than 50 characters.");
+        return;
+    }
+
+    // Create message hash
+    String[] words = message.split(" ");
+    String firstWord = words.length > 0 ? words[0].toUpperCase() : "";
+    String lastWord = words.length > 1 ? words[words.length - 1].toUpperCase() : firstWord;
+    String hash = messageID.substring(0, 2) + ":" + message.length() + ":" + firstWord + lastWord;
+
+    // Store message in format: ID | Hash | Recipient | Message
+    String formattedMsg = "Message ID: " + messageID +
+                          "Message Hash: " + hash +
+                          "Recipient: " + recipient +
+                          "Message: " + message;
+    recentMessages.add(formattedMsg);
+    messageCounter++;
+
+    // Show message
+    JOptionPane.showMessageDialog(null, formattedMsg);
+}
+static void showRecentMessages() {
+    if (recentMessages.isEmpty()) {
+        JOptionPane.showMessageDialog(null, "No messages sent yet.");
+    } else {
+        StringBuilder allMessages = new StringBuilder();
+        for (String msg : recentMessages) {
+            allMessages.append(msg).append("");
+        }
+        allMessages.append("Total Messages Sent: ").append(messageCounter);
+        JOptionPane.showMessageDialog(null, allMessages.toString());
+    }
+}
+
+import java.util.Random;
+
+public final class Message {
+    private final String messageID;
+    private final String recipient;
+    private final String content;
+    private final String messageHash;
+
+    private static int totalMessages = 0;
+
+    // Constructor
+    public Message(String recipient, String content) {
+        this.messageID = generateMessageID();
+        this.recipient = recipient;
+        this.content = content;
+        this.messageHash = createMessageHash();
+        totalMessages++;
+    }
+
+    // Generates a 10-digit random message ID
+    private String generateMessageID() {
+        Random rand = new Random();
+        StringBuilder id = new StringBuilder();
+        for (int i = 0; i < 10; i++) {
+            id.append(rand.nextInt(10));
+        }
+        return id.toString();
+    }
+
+    // 1. Check if Message ID is valid (must be 10 digits)
+    public boolean checkMessageID() {
+        return messageID.matches("{10}");
+    }
+
+    // 2. Check recipient number length and international format
+    public int checkRecipientCell() {
+        return recipient.matches("}") ? 1 : 0;
+    }
+
+    // 3. Create Message Hash: first 2 of ID + ":" + message length + first + last word (all uppercase)
+    public String createMessageHash() {
+        String[] words = content.split(" ");
+        String first = words.length > 0 ? words[0].toUpperCase() : "";
+        String last = words.length > 1 ? words[words.length - 1].toUpperCase() : first;
+        return messageID.substring(0, 2) + ":" + content.length() + ":" + first + last;
+    }
+
+    // 4. Format message for display
+    public String SentMessage() {
+        return "Message ID: " + messageID +
+               "Message Hash: " + messageHash +
+               "Recipient: " + recipient +
+               "Message: " + content;
+    }
+
+    // 5. Return same formatted string for printing
+    public String printMessages() {
+        return SentMessage();
+    }
+
+    // 6. Return total messages created
+    public static int returnTotalMessages() {
+        return totalMessages;
+    }
+}
+Message msg = new Message(recipient,message);
+
+if (!msg.checkMessageID()) {
+    JOptionPane.showMessageDialog(null, "Invalid Message ID.");
+    return;
+}
+
+if (msg.checkRecipientCell() == 0) {
+    JOptionPane.showMessageDialog(null, "Invalid recipient number format.");
+    return;
+}
+
+JOptionPane.showMessageDialog(null, msg.SentMessage());
+recentMessages.add(msg.printMessages());
+
+
+
+import static org.junit.jupiter.api.Assertions.;
+import org.junit.jupiter.api.Test;
+
+public class MessageTest {
+
+    public void testMessageUnder250Characters_Success() {
+        String content = "Hi Mike, can you join us for dinner tonight?";
+        assertTrue(content.length() <= 250, "Message ready to send.");
+    }
+
+    public void testMessageExceeds250Characters_Failure() {
+        String longMessage = "X".repeat(251);
+        assertTrue(longMessage.length() > 250,
+            "Message exceeds 250 characters by " + (longMessage.length() - 250) + ", please reduce size.");
+    }
+
+    public void testRecipientNumberCorrectlyFormatted_Success() {
+        Message msg = new Message("+27718693002", "Test");
+        assertEquals(1, msg.checkRecipientCell(), "Cell phone number successfully captured.");
+    }
+
+    public void testRecipientNumberIncorrectlyFormatted_Failure() {
+        Message msg = new Message("08575975889", "Test");
+        assertEquals(0, msg.checkRecipientCell(),
+            "Cell phone number is incorrectly formatted or does not contain an international code.");
+    }
+
+    public void testMessageHashCreation() {
+        Message msg = new Message("+27718693002", "Hi Mike, join us tonight");
+        String hash = msg.createMessageHash();
+        assertNotNull(hash);
+        assertTrue(hash.matches("[A-Z0-9:]+"), "Message hash should be in uppercase and valid format.");
+    }
+
+    public void testMessageIDCreated() {
+        Message msg = new Message("+27718693002", "Testing ID creation");
+        assertTrue(msg.checkMessageID(), "Message ID successfully generated.");
+    }
+
+    public void testMessageSendState_Sent() {
+        Message msg = new Message("+27718693002", "Sent message test");
+        String result = msg.sentMessage("Send");
+        assertEquals("Message successfully sent.", result);
+    }
+
+    public void testMessageSendState_Stored() {
+        Message msg = new Message("+27718693002", "Store message test");
+        String result = msg.sentMessage("Store");
+        assertEquals("Message successfully stored.", result);
+    }
+
+    public void testMessageSendState_Disregarded() {
+        Message msg = new Message("+27718693002", "Discard message test");
+        String result = msg.sentMessage("Disregard");
+        assertEquals("Message disregarded.", result);
+    }
+
+    public void testTotalMessagesCounter() {
+        int before = Message.returnTotalMessages();
+        new Message("+27710000000", "New message 1");
+        new Message("+27710000001", "New message 2");
+        int after = Message.returnTotalMessages();
+        assertEquals(before + 2, after, "Total messages should increase by 2.");
+    
+
+    public void testTotalMessagesIncrement() {
+        int currentTotal = Message.returnTotalMessages();
+        new Message("+27718693002", "Test 1");
+        new Message("+27718693003", "Test 2");
+
+        assertEquals(currentTotal + 2, Message.returnTotalMessages());
+    }
+}
+
